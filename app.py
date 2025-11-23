@@ -51,7 +51,7 @@ archivo = st.file_uploader("📸 Saca una foto a la etiqueta", type=["jpg", "png
 
 # --- 4. EL CEREBRO DE LA IA ---
 def analizar_cafe(imagen, metodo):
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-1.5-pro')
     
     prompt = f"""
     Actúa como un experto barista y sommelier de Uruguay. 
