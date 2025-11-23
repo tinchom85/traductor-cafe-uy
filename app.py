@@ -48,40 +48,64 @@ metodo_usuario = st.selectbox(
 # Botón para subir foto o usar cámara
 archivo = st.file_uploader("📸 Saca una foto a la etiqueta", type=["jpg", "png", "jpeg"])
 
-# --- 4. EL CEREBRO DE LA IA ---
+# --- 4. EL CEREBRO DE LA IA (VERSIÓN PRO BARISTA & GOURMET) ---
 def analizar_cafe(imagen, metodo):
-    # AQUÍ ESTABA EL ERROR: CAMBIAMOS AL MODELO QUE SÍ TIENES
     model = genai.GenerativeModel('gemini-2.5-flash') 
     
-    prompt = prompt = f"""
-    Actúa como un Sommelier de Café experto y Barista profesional de una cafetería de especialidad en Uruguay.
-    Analiza esta imagen de una etiqueta de café.
-    El usuario va a usar esta cafetera: {metodo}.
-
-    TU TONO DE VOZ:
-    - Profesional, educado y cálido (Rioplatense neutro).
-    - Evita la jerga callejera ("bo", "fiera", "salado").
-    - Habla con la autoridad de quien sabe mucho pero explica simple.
-
-    Estructura tu respuesta así:
+    prompt = f"""
+    Actúa como un Juez del Campeonato Mundial de Baristas y Crítico Gastronómico Uruguayo.
+    Analiza la imagen de esta etiqueta de café.
     
-    ### 🧐 Perfil Sensorial
-    (Traduce: Variedad, Proceso, Altura. Explica las "Notas de Cata" de forma elegante. Ej: "Encontrarás una acidez brillante..." en lugar de "es ácido").
+    El usuario seleccionó la cafetera: {metodo}.
 
-    ### ⚙️ Guía de Preparación ({metodo})
-    (Instrucciones precisas: Ratio café/agua, Temperatura y Molienda. Si es "Recomendame vos", elige el método que mejor respete el grano).
+    --- 🧠 LÓGICA DE EXTRACCIÓN (SCA STANDARDS) ---
+    Para recomendar la receta, analiza visualmente el TUESTE y lee el PROCESO (Lavado, Natural, Honey):
+    1. Si es Tueste Claro/Medio + Lavado -> Sugiere resaltar acidez y claridad (Ratios 1:16, temperaturas 92-94°C).
+    2. Si es Tueste Medio/Oscuro + Natural -> Sugiere resaltar cuerpo y dulzura (Ratios 1:15, temperaturas 88-90°C).
+    3. Si el usuario eligió "Recomendame vos":
+       - Para cafés complejos/florales -> Recomienda Filtro (V60/Kalita).
+       - Para cafés con notas a chocolate/frutos secos -> Recomienda Prensa Francesa o Cafetera Italiana.
+    
+    --- 🥐 BASE DE DATOS DE MARIDAJE URUGUAYO (VARIEDAD) ---
+    NO RECOMIENDES SIEMPRE LO MISMO. Selecciona algo distinto basado en la "Nota Dominante" del café:
+    
+    [Opción Salada - Mañana/Tarde]
+    - Tostado Mixto (Jamón y Queso) en pan de miga.
+    - Sándwich Caliente (con muzzarella).
+    - Tarta Pascualina (si es un café muy herbal).
+    - Pan de Campo con aceite de oliva (para cafés muy ácidos).
+    - Scones de Queso (Clásico).
 
-    ### 🥐 Maridaje Sugerido (Cafetería Local)
-    (Recomienda UN acompañamiento ideal para Desayuno o Merienda que se encuentre en una cafetería uruguaya.
-    
-    REGLAS DE MARIDAJE:
-    - Cafés Frutales/Florales/Ligeros: Van bien con Scones de Queso (el contraste salado realza el dulce), Medialunas de Manteca o Tostadas con queso blanco.
-    - Cafés Chocolatosos/Nuez/Dulces: Van bien con Alfajor de Maicena, Cookie de Chocolate o Brownie.
-    - Cafés Intensos/Tostado Medio-Alto: Van bien con Tostado Mixto (Jamón y Queso) para limpiar paladar o Medialunas de Grasa.
-    - Cafés Especiados/Complejos: Carrot Cake o Budín de Limón.
-    
-    Justifica brevemente por qué combinan esos sabores).
+    [Opción Dulce - Panadería]
+    - Ojitos (masa seca con dulce de membrillo).
+    - Margaritas (con crema pastelera).
+    - Polvorones.
+    - Coquitos.
+    - Bizcochos de Grasa (Cuernitos/Vigilantes) -> Ideales para cafés con cuerpo.
+    - Salchichón de Chocolate (Solo para cafés muy intensos/amargos).
+    - Torta de Ricota.
+    - Pasta Frola (Dulce de Leche o Membrillo según la acidez del café).
+    - Carrot Cake o Budín de Limón (Cafetería moderna).
+
+    --- ESTRUCTURA DE RESPUESTA ---
+    Usa un tono Profesional pero Rioplatense.
+
+    ### 🧐 Ficha Técnica
+    (Resume Variedad, Proceso y Altura. Describe el perfil sensorial sin usar palabras raras).
+
+    ### 🧪 La Receta del Experto ({metodo})
+    (Basa tu recomendación en estándares internacionales. Da Ratio exacto (gr de café por ml de agua), Temperatura precisa y Molienda. Explica POR QUÉ esa receta mejora este grano específico).
+
+    ### 🍽️ Maridaje Recomendado
+    (Elige UNA opción Salada O Dulce de la lista de arriba que genere una "explosión de sabor" con este café. No seas aburrido. Explica el porqué de la combinación).
     """
+    
+    try:
+        with st.spinner('Consultando estándares SCA y vitrinas de panadería... 🥐'):
+            response = model.generate_content([prompt, imagen])
+            return response.text
+    except Exception as e:
+        return f"Ups, error técnico leyendo la etiqueta: {e}"
     
     try:
         with st.spinner('Analizando etiqueta y buscando un bizcocho... 🧉'):
